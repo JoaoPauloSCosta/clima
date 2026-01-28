@@ -5,12 +5,28 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; img-src 'self' data: https://openweathermap.org https://flagcdn.com; connect-src 'self'; font-src 'self'"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com; style-src-elem 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https://openweathermap.org https://flagcdn.com blob:; connect-src 'self' https://api.openweathermap.org https://openweathermap.org; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
         }
       ]
     }
   ],
   "rewrites": [
-    { "source": "/api/weather", "destination": "/api/weather" }
+    {
+      "source": "/api/weather",
+      "destination": "/api/weather"
+    }
+  ],
+  "routes": [
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
   ]
 }
