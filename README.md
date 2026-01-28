@@ -35,6 +35,7 @@ weather-app/
 │   ├── ui.js       # Renderização na tela
 │   └── storage.js  # Gerenciamento do localStorage
 ├── server.js       # Servidor Express (API + estáticos); chave da API só aqui
+├── vercel.json     # Headers (CSP) para deploy na Vercel
 ├── .env.example    # Exemplo de variáveis (copie para .env)
 ├── index.html      # Página principal
 └── README.md       # Documentação
@@ -74,6 +75,15 @@ npm start
 ```
 
 Acesse `http://localhost:3000` no navegador.
+
+### 4. Deploy na Vercel
+
+O `vercel.json` já define **Content-Security-Policy** para permitir Tailwind CDN, scripts e estilos inline. Se ainda aparecerem erros de CSP no console:
+
+- Em **Project Settings → Security Headers** (ou similar), desative ou ajuste o preset que usa `default-src 'none'`, pois ele bloqueia fontes, Tailwind e scripts inline.
+- Os erros de `prepare.js` e "listener indicated an asynchronous response" costumam vir de **extensões do navegador** (ex.: React DevTools, Grammarly). Para testar, use aba anônima ou desative extensões.
+
+Na Vercel, use **Serverless Functions** para `/api/weather` (ex.: `api/weather.js`) e configure `OPENWEATHER_API_KEY` nas variáveis de ambiente do projeto.
 
 ## 📱 Como Usar
 
