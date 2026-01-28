@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clima — Previsão do Tempo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'] },
+                    colors: {
+                        brand: { 400: '#fbbf24', 500: '#f59e0b', 600: '#d97706' },
+                        surface: { 800: '#1e293b', 700: '#334155', 600: '#475569' }
+                    },
+                    borderRadius: { sharp: '4px' },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                        'fade-in-up': 'fadeInUp 0.5s ease-out forwards'
+                    },
+                    keyframes: {
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        fadeInUp: { '0%': { opacity: '0', transform: 'translateY(12px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } }
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation: none !important; transition-duration: 0.01ms !important; }
+        }
+        .animate-stagger-1 { animation-delay: 0.05s; }
+        .animate-stagger-2 { animation-delay: 0.1s; }
+        .animate-stagger-3 { animation-delay: 0.15s; }
+        .animate-stagger-4 { animation-delay: 0.2s; }
+        .animate-stagger-5 { animation-delay: 0.25s; }
+        .animate-stagger-6 { animation-delay: 0.3s; }
+        .animate-stagger-7 { animation-delay: 0.35s; }
+        .focus-ring:focus-visible {
+            outline: 2px solid #f59e0b;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100 font-sans antialiased">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-brand-500 focus:text-slate-900 focus:rounded-sharp focus:font-semibold">Pular para o conteúdo</a>
+
+    <header class="border-b border-slate-800/80 bg-slate-900/50 backdrop-blur-sm">
+        <div class="container mx-auto px-4 py-6 max-w-4xl">
+            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">Clima</h1>
+            <p class="mt-1 text-slate-400 text-sm sm:text-base">Previsão do tempo para os próximos 7 dias</p>
+        </div>
+    </header>
+
+    <main id="main" class="container mx-auto px-4 py-8 max-w-4xl">
+        <section class="mb-10 opacity-0 animate-fade-in-up animate-stagger-1" aria-label="Buscar cidade">
+            <form id="searchForm" class="flex flex-col sm:flex-row gap-3">
+                <div class="flex-1">
+                    <label for="cityInput" class="block text-slate-400 text-sm font-medium mb-1.5">Cidade</label>
+                    <input
+                        type="text"
+                        id="cityInput"
+                        name="city"
+                        placeholder="Ex.: São Paulo, Rio de Janeiro..."
+                        autocomplete="off"
+                        class="focus-ring w-full px-4 py-3 rounded-sharp bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 transition-colors"
+                        required
+                    >
+                </div>
+                <div class="flex items-end">
+                    <button
+                        type="submit"
+                        class="focus-ring w-full sm:w-auto px-6 py-3 bg-brand-500 hover:bg-brand-400 text-slate-900 font-semibold rounded-sharp transition-colors hover:shadow-lg hover:shadow-brand-500/20"
+                    >
+                        Buscar
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <section id="loadingArea" class="hidden mb-10" aria-live="polite" aria-busy="true">
+            <div class="flex flex-col items-center justify-center py-16 px-6 bg-slate-900/80 border border-slate-700 rounded-sharp">
+                <div class="w-10 h-10 border-2 border-brand-500 border-t-transparent rounded-full animate-spin mb-4" aria-hidden="true"></div>
+                <p class="text-slate-400">Buscando previsão...</p>
+            </div>
+        </section>
+
+        <section id="errorArea" class="hidden mb-10" aria-live="assertive">
+            <div class="px-4 py-3 bg-red-950/60 border border-red-800/80 text-red-200 rounded-sharp">
+                <p id="errorMessage" class="font-medium"></p>
+            </div>
+        </section>
+
+        <section id="weatherArea" class="hidden mb-10" aria-label="Resultado da busca">
+            <div class="bg-slate-900/80 border border-slate-700 rounded-sharp p-6 mb-6 opacity-0 animate-fade-in-up">
+                <h2 id="cityName" class="text-2xl font-bold text-white mb-4"></h2>
+                <div class="flex flex-wrap items-center gap-6">
+                    <span id="currentTemp" class="text-5xl sm:text-6xl font-extrabold text-brand-400 tabular-nums"></span>
+                    <div class="flex flex-col gap-0.5">
+                        <span id="weatherDescription" class="text-lg text-slate-300 capitalize"></span>
+                        <span id="feelsLike" class="text-sm text-slate-500"></span>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-semibold text-slate-300 mb-3">Próximos 7 dias</h3>
+            <div id="forecastContainer" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3"></div>
+        </section>
+
+        <section id="historyArea" class="opacity-0 animate-fade-in-up animate-stagger-3" aria-label="Histórico de cidades">
+            <h3 class="text-lg font-semibold text-slate-300 mb-3">Histórico</h3>
+            <div id="historyList" class="bg-slate-900/50 border border-slate-800 rounded-sharp p-4 min-h-[120px]">
+                <p class="text-slate-500 text-center text-sm">Nenhuma cidade pesquisada ainda.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="border-t border-slate-800/80 mt-12">
+        <div class="container mx-auto px-4 py-6 max-w-4xl">
+            <p class="text-center text-slate-500 text-sm">Clima — HTML5, Tailwind CSS e JavaScript</p>
+        </div>
+    </footer>
+
+    <script src="js/storage.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
