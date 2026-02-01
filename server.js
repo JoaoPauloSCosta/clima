@@ -82,7 +82,7 @@ function processForecastData(forecastList) {
         const dayKey = date.toDateString();
         const dayIndex = Math.floor((date - today) / (1000 * 60 * 60 * 24));
 
-        if (dayIndex >= 1 && dayIndex <= 7) {
+        if (dayIndex >= 1 && dayIndex <= 5) {
             if (!daysMap.has(dayKey)) {
                 daysMap.set(dayKey, {
                     date,
